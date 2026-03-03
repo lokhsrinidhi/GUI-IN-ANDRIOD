@@ -1,0 +1,94 @@
+//Main 1
+package com.example.map;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+public class MainActivity extends AppCompatActivity {
+    EditText land,lang;
+    Button b1;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+        land=(EditText)findViewById(R.id.e1);
+        lang=(EditText) findViewById(R.id.e2);
+        b1=(Button) findViewById(R.id.b1);
+        b1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String lat = land.getText().toString().trim();
+                String lon = lang.getText().toString().trim();
+                // Validation check
+                if (lat.isEmpty() || lon.isEmpty()) {
+                    Toast.makeText(MainActivity.this,
+                            "Please enter both Latitude and Longitude",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+
+       Intent intent = new Intent(MainActivity.this,MainActivity2.class);
+                    intent.putExtra("lat", lat);
+                    intent.putExtra("lon", lon);
+                    startActivity(intent);
+                }
+            }
+        });
+    }
+}
+
+//MAIN 2
+package com.example.map;
+
+import android.os.Bundle;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class MainActivity2 extends AppCompatActivity {
+    WebView w1;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main2);
+
+        // Receive data from MainActivity1
+        String lat = getIntent().getStringExtra("lat");
+        String lon = getIntent().getStringExtra("lon");
+
+        w1 = findViewById(R.id.w1);
+
+        // Important: Open inside app
+        w1.setWebViewClient(new WebViewClient());
+
+        WebSettings webSettings = w1.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+        if (lat != null && lon != null) {
+            w1.loadUrl("https://www.google.com/maps/@" + lat + "," + lon + ",13z");
+        }
+    }
+}
+
